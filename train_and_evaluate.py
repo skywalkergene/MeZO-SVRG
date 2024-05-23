@@ -75,15 +75,15 @@ def compute_loss(model, batch):
 
 # train and evaluate
 def train_and_evaluate(model, train_loader, valid_loader, optimizer, epochs=10):
-    for epoch in range(epochs):  # 假设训练3个epoch
-        # 训练阶段
+    for epoch in range(epochs):
+        # train
         model.train()
         total_train_loss = 0
         for batch in train_loader:
-            # 禁用自动微分
+            # ban autograd
             with torch.no_grad():
-                # 这里我们假设零阶优化器已经计算了gradients
-                # 你需要确保param.grad已经被正确设置
+
+                # must assure param.grad is set correctly
                 loss = compute_loss(model, batch)
                 # compute gradient and update parameters
                 optimizer.step(batch)
@@ -93,7 +93,7 @@ def train_and_evaluate(model, train_loader, valid_loader, optimizer, epochs=10):
         avg_train_loss = total_train_loss / len(train_loader)
         print(f'Epoch {epoch + 1}, Training Loss: {avg_train_loss}')
 
-        # 验证阶段
+        # evaluate
         model.eval()
         total_val_loss = 0
         with torch.no_grad():
@@ -105,5 +105,5 @@ def train_and_evaluate(model, train_loader, valid_loader, optimizer, epochs=10):
         print(f'Epoch {epoch + 1}, Validation Loss: {avg_val_loss}')
 
 
-# 执行训练和验证
+# execute
 train_and_evaluate(model, train_loader, valid_loader, optimizer)
