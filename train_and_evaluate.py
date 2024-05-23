@@ -17,7 +17,7 @@ dataset_names = ['mnli', 'qnli', 'sst2', 'cola']
 
 # load dataset and preprocess
 def load_and_process_dataset(model_name, dataset_name):
-    # 加载数据集
+    # load dataset
     dataset = load_dataset('glue', dataset_name)
 
     # load tokenizer
@@ -31,13 +31,13 @@ def load_and_process_dataset(model_name, dataset_name):
         else:
             raise ValueError(f"Unsupported dataset: {dataset_name}")
 
-    # 应用tokenization函数
+    # apply tokenization
     encoded_dataset = dataset.map(tokenize_function, batched=True)
 
     # transform type to torch.tensor
     encoded_dataset.set_format(type='torch', columns=['input_ids', 'attention_mask', 'label'])
 
-    # 创建DataLoader
+    # create DataLoader
     data_collator = DataCollatorWithPadding(tokenizer)
     train_loader = DataLoader(encoded_dataset['train'], batch_size=32, shuffle=True, collate_fn=data_collator)
     valid_loader = DataLoader(encoded_dataset['validation'], batch_size=32, collate_fn=data_collator)
@@ -51,7 +51,7 @@ dataset_name = 'sst2'
 
 train_loader, valid_loader, tokenizer = load_and_process_dataset(model_name, dataset_name)
 
-# 加载模型
+# load model
 model = AutoModelForSequenceClassification.from_pretrained(model_names[model_name], num_labels=2)
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model.to(device)
@@ -66,14 +66,14 @@ def device():
 Gradient_Estimator = ZOGradientEstimator(model, device, train_loader, seed=0)
 optimizer = MeZO_SVRG(model.parameters(), Gradient_Estimator, lr1=0.01, lr2=0.001, q=10, mu=0.01, batch_size=32)
 
-# 定义损失计算函数
+# loss function
 def compute_loss(model, batch):
     inputs = {k: v.to(device) for k, v in batch.items() if k in tokenizer.model_input_names}
     labels = batch['label'].to(device)
     outputs = model(**inputs, labels=labels)
     return outputs.loss
 
-# 训练和验证循环
+# train and evaluate
 def train_and_evaluate(model, train_loader, valid_loader, optimizer, epochs=10):
     for epoch in range(epochs):  # 假设训练3个epoch
         # 训练阶段

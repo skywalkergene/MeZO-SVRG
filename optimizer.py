@@ -26,7 +26,7 @@ class MeZO_SVRG(Optimizer):
 
         self.state['step'] = 0
 
-    def step(self, batch, closure=None):  # 所有参数都更新一遍
+    def step(self, batch, closure=None):  # update parameters once
         loss = None
         if self.state['step'] % self.q == 0:
             self.estimator.compute_zeroth_order_grad(batch=batch, batch_mode=False, epsilon=1e-4)
@@ -37,9 +37,7 @@ class MeZO_SVRG(Optimizer):
             self.estimator.restore()
             self.estimator.compute_zeroth_order_grad(batch=batch, current=False, batch_mode=True, epsilon=1e-4)
             self.estimator.reload_params()
-            '''
-            构造另一套函数计算上一个参数值上的梯度估计
-            '''
+
         for group in self.param_groups:
             for p in group['params']:
                 lr1 = group['lr1']
@@ -68,21 +66,3 @@ class MeZO_SVRG(Optimizer):
             self.state['step'] += 1
 
         return loss
-
-
-# Example usage
-def example_loss(theta):
-    # Define a simple loss function for demonstration purposes
-    return sum([torch.sum(t ** 2) for t in theta])
-
-
-# Define a simple model for demonstration purposes
-class SimpleModel(torch.nn.Module):
-    def __init__(self):
-        super(SimpleModel, self).__init__()
-        self.fc1 = torch.nn.Linear(10, 10)
-
-    def forward(self, x):
-        return self.fc1(x)
-
-

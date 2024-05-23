@@ -29,9 +29,9 @@ class ZOGradientEstimator:
                 '''
                 data_iter = self.current_iter
                 try:
-                    batch = next(data_iter)  # 获取下一个小批量
+                    batch = next(data_iter)  # get the next mini-batch
                 except StopIteration:
-                    # 如果到达数据集末尾，重置迭代器并再次获取第一个小批量
+                    # if reach the end, reset the iterator and get the first batch
                     self.data_iter = iter(self.data_loader)
                     batch = next(self.data_iter)
                 '''
@@ -43,9 +43,9 @@ class ZOGradientEstimator:
             '''
             data_iter = self.current_iter
             try:
-                batch = next(data_iter)  # 获取下一个小批量
+                batch = next(data_iter)  # get the next mini-batch
             except StopIteration:
-                # 如果到达数据集末尾，重置迭代器并再次获取第一个小批量
+                # if reach the end, reset the iterator and get the first batch
                 self.data_iter = iter(self.data_loader)
                 batch = next(self.data_iter)
             '''
